@@ -40,7 +40,7 @@ def extract_first_and_last_number(string: str) -> tuple[int, int]:
 
 def debug(string: str) -> None:
     if DEBUG_PRINTS:
-        print(str)
+        print(string)
 
 
 def main():
