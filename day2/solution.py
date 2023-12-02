@@ -4,6 +4,8 @@ MAX_RED = 12
 MAX_GREEN = 13
 MAX_BLUE = 14
 
+DEBUG_MODE = True
+
 
 def extract_game_and_id_from_line(string: str) -> tuple[int, str]:
     """
@@ -38,6 +40,10 @@ def extract_subsets_from_game(string: str) -> list[str]:
 
 
 class GameSet:
+    """
+    An encapsulating class for a game set object.
+    """
+
     def __init__(self, number, color):
         self.number = number
         self.color = color
@@ -67,14 +73,19 @@ def read_lines_of_file(file) -> list[str]:
     return open(file).read().split('\n')
 
 
+def debug(string: str) -> None:
+    if DEBUG_MODE:
+        print(string)
+
+
 def part_one():
     lines = read_lines_of_file("./text.txt")
-    print(f"Lines length: {len(lines)}")
+    debug(f"Lines length: {len(lines)}")
 
     game_ids_sum = 0
     for line in lines:
         id, game = extract_game_and_id_from_line(line)
-        print(f"Id: {id}, game: {game}")
+        debug(f"Id: {id}, game: {game}")
         subsets = extract_subsets_from_game(game)
 
         game_possible = True
@@ -83,10 +94,13 @@ def part_one():
             for cube_set in cube_sets:
                 if cube_set.color == "blue" and cube_set.number > MAX_BLUE:
                     game_possible = False
+                    debug("Game not possible, blues out of range")
                 elif cube_set.color == "green" and cube_set.number > MAX_GREEN:
                     game_possible = False
+                    debug("Game not possible, greens out of range")
                 elif cube_set.color == 'red' and cube_set.number > MAX_RED:
                     game_possible = False
+                    debug("Game not possible, reds out of range")
 
         if game_possible:
             game_ids_sum = game_ids_sum + id
@@ -96,12 +110,12 @@ def part_one():
 
 def part_two():
     lines = read_lines_of_file("./text.txt")
-    print(f"Lines length: {len(lines)}")
+    debug(f"Lines length: {len(lines)}")
 
     power_sum = 0
     for line in lines:
         id, game = extract_game_and_id_from_line(line)
-        print(f"Id: {id}, game: {game}")
+        debug(f"Id: {id}, game: {game}")
         subsets = extract_subsets_from_game(game)
 
         max_blues = 0
@@ -113,17 +127,21 @@ def part_two():
             for cube_set in cube_sets:
                 if cube_set.color == "blue":
                     max_blues = max(max_blues, cube_set.number)
+                    debug(f"New max blues: {max_blues}")
                 elif cube_set.color == "green":
                     max_greens = max(max_greens, cube_set.number)
+                    debug(f"New max greens: {max_greens}")
                 elif cube_set.color == 'red':
                     max_red = max(max_red, cube_set.number)
+                    debug(f"New max reds: {max_red}")
 
         power = max_blues * max_greens * max_red
+        debug(f"Current power: {power}")
         power_sum = power_sum + power
 
     print(f"Power sum: {power_sum}")
 
 
 if __name__ == '__main__':
-    # part_one()
+    part_one()
     part_two()
