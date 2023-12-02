@@ -29,7 +29,7 @@ def read_lines_of_file(file) -> list[str]:
 
 def extract_first_and_last_number(string: str) -> tuple[int, int]:
     """
-    Extracts teh first and last digit of the provided string.
+    Extracts the first and last digit of the provided string.
     """
     numbers = re.findall(r'\d', string)
     first_number = numbers[0]
