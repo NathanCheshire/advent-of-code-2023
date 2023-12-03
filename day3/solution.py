@@ -1,7 +1,5 @@
-import re
-
-directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1),
-              (0, 1), (1, -1), (1, 0), (1, 1)]
+NEIGHBOR_OFFSETS = [(-1, -1), (-1, 0), (-1, 1), (0, -1),
+                    (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
 def read_lines_of_file(file) -> list[str]:
@@ -12,33 +10,38 @@ def read_lines_of_file(file) -> list[str]:
 
 
 def is_symbol(char):
+    """
+    Returns whether the provided character is a symbol meaning not a digit and not a period.
+    """
     return not char.isdigit() and char != '.'
 
 
-def get_neighbors(grid, x, y):
+def get_neighbors(grid: list[list[str]], x: int, y: int) -> list[str]:
+    """
+    Returns the neighbors of the provided grid x,y position.
+    """
     neighbors = []
     rows, cols = len(grid), len(grid[0])
 
-    for dx, dy in directions:
-        nx, ny = x + dx, y + dy
+    for offset_x, offset_y in NEIGHBOR_OFFSETS:
+        nx, ny = x + offset_x, y + offset_y
         if 0 <= nx < rows and 0 <= ny < cols:
             neighbors.append(grid[nx][ny])
 
     return neighbors
 
 
-def extract_numbers_next_to_symbols_improved(lines: list[str]) -> list[int]:
-    grid = [list(line) for line in lines]
-
+def compute_part_number_sum(grid: list[list[str]]) -> int:
+    """
+    The part one solution, computes the sum of all part numbers of the grid.
+    """
     numbers_next_to_symbols = []
     for x in range(len(grid)):
         for y in range(len(grid[x])):
             if grid[x][y].isdigit():
                 number = grid[x][y]
-                print(f"On number: {number}")
 
                 if y > 0 and grid[x][y - 1].isdigit():
-                    print("Skipping because higher is digit")
                     continue
 
                 ny = y + 1
@@ -51,25 +54,85 @@ def extract_numbers_next_to_symbols_improved(lines: list[str]) -> list[int]:
                         numbers_next_to_symbols.append(int(number))
                         break
 
-    return numbers_next_to_symbols
-
-
-def part_one():
-    lines = read_lines_of_file("./text.txt")
-    print(f"lines read: {len(lines)}")
-
-    numbers_next_to_symbols = extract_numbers_next_to_symbols_improved(lines)
-
     sum = 0
     for number in numbers_next_to_symbols:
         sum = sum + number
-    print(f"Sum: {sum}")
+
+    return sum
 
 
-def part_two():
-    pass
+def find_numbers_around_gear(grid, x, y) -> list[int]:
+    """
+    Finds the number around the provided gear position.
+    """
+    # there will probably not be duplicate numbers so this helps eliminate a duplicate number bug I was seeing
+    numbers = set()
+
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            if dx == 0 and dy == 0:
+                continue
+
+            nx = x + dx
+            ny = y + dy
+
+            in_x_bounds = 0 <= nx < len(grid)
+            in_y_bounds = 0 <= ny < len(grid[0])
+            is_digit = grid[nx][ny].isdigit()
+
+            # construct the full number of all the digits
+            if in_x_bounds and in_y_bounds and is_digit:
+                # extend left attempt
+                number = ''
+                lx = nx
+                ly = ny
+                while ly >= 0 and grid[lx][ly].isdigit():
+                    number = grid[lx][ly] + number
+                    ly -= 1
+
+                # extend right attempt
+                rx = nx
+                ry = ny + 1
+
+                while ry < len(grid[0]) and grid[rx][ry].isdigit():
+                    number += grid[rx][ry]
+                    ry += 1
+
+                numbers.add(number)
+
+    return numbers
+
+
+def calculate_gear_ratio_sum(grid: list[list[str]]) -> int:
+    """
+    The part two solution, computes the sum of all gear ratios of the grid.
+    """
+    x_len = len(grid)
+    y_len = len(grid[0])
+
+    total_sum = 0
+    for x in range(x_len):
+        for y in range(y_len):
+            if grid[x][y] != '*':
+                continue
+
+            numbers = find_numbers_around_gear(grid, x, y)
+
+            if len(numbers) == 2:
+                num1, num2 = map(int, numbers)
+                total_sum += num1 * num2
+
+    return total_sum
 
 
 if __name__ == '__main__':
-    part_one()
-    part_two()
+    lines = read_lines_of_file("./text.txt")
+    grid = [list(line) for line in lines]
+
+    # part 1
+    sum = compute_part_number_sum(grid)
+    print(f"Sum: {sum}")
+
+    # part 2
+    gear_ratio = calculate_gear_ratio_sum(grid)
+    print(f"Gear ratio: {gear_ratio}")
