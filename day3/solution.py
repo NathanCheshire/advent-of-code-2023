@@ -24,8 +24,11 @@ def get_neighbors(grid: list[list[str]], x: int, y: int) -> list[str]:
     rows, cols = len(grid), len(grid[0])
 
     for offset_x, offset_y in NEIGHBOR_OFFSETS:
-        nx, ny = x + offset_x, y + offset_y
-        if 0 <= nx < rows and 0 <= ny < cols:
+        nx = x + offset_x
+        ny = y + offset_y
+        nx_in_bounds = 0 <= nx < rows
+        ny_in_bounds = 0 <= ny < cols
+        if nx_in_bounds and ny_in_bounds:
             neighbors.append(grid[nx][ny])
 
     return neighbors
