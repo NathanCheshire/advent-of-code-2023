@@ -23,6 +23,20 @@ def extract_seeds(lines: list[str]) -> list[int]:
     return seeds
 
 
+def extract_seeds_part_two(lines: list[str]) -> list[int]:
+    seed_line = lines[0]
+    seed_line = seed_line.replace(SEED_HEADER, "").strip()
+    seeds_parts = seed_line.split()
+
+    if len(seeds_parts) % 2 != 0:
+        raise ValueError("Seed parts should be in pairs")
+
+    seeds = [seed for start, length in zip(seeds_parts[::2], seeds_parts[1::2])
+             for seed in range(int(start), int(start) + int(length))]
+
+    return seeds
+
+
 class CustomMap:
     def __init__(self, destination_start, source_start, mapping_range):
         self.destination_start = destination_start
@@ -56,7 +70,7 @@ def parse_lit_to_custom_mappers(list: list[str]) -> list[CustomMap]:
 
 
 def part_one(lines: list[str]) -> None:
-    seeds = extract_seeds(lines)
+    seeds = extract_seeds_part_two(lines)
 
     seed_to_soil_str_list = []
     seed_to_fertilizer_str_list = []
@@ -93,30 +107,17 @@ def part_one(lines: list[str]) -> None:
         current_map.append(line)
 
     seeds_to_soil = parse_lit_to_custom_mappers(seed_to_soil_str_list[1:])
-    print(f"seeds_to_soil len: {len(seeds_to_soil)}")
-
     seed_to_fertilizer = parse_lit_to_custom_mappers(
         seed_to_fertilizer_str_list[1:])
-    print(f"seed_to_fertilizer len: {len(seed_to_fertilizer)}")
-
     fertilizer_to_water = parse_lit_to_custom_mappers(
         fertilizer_to_water_str_list[1:])
-    print(f"fertilizer_to_water len: {len(fertilizer_to_water)}")
-
     water_to_light = parse_lit_to_custom_mappers(water_to_light_str_list[1:])
-    print(f"water_to_light len: {len(water_to_light)}")
-
     light_to_temperature = parse_lit_to_custom_mappers(
         light_to_temperature_str_list[1:])
-    print(f"light_to_temperature len: {len(light_to_temperature)}")
-
     temperature_to_humidity = parse_lit_to_custom_mappers(
         temperature_to_humidity_str_list[1:])
-    print(f"temperature_to_humidity len: {len(temperature_to_humidity)}")
-
     humidity_to_location = parse_lit_to_custom_mappers(
         humidity_to_location_str_list[1:])
-    print(f"humidity_to_location len: {len(humidity_to_location)}")
 
     lowest_location = float('inf')
 
