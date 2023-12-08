@@ -12,6 +12,8 @@ GRAPH_START_INDEX = 1
 GRAPH_LEFT_INDEX = 2
 GRAPH_RIGHT_INDEX = 3
 
+INSTRUCTIONS_INDEX = 0
+
 
 def read_lines_of_file(file) -> list[str]:
     """
@@ -40,7 +42,7 @@ def contruct_graph(lines: list[str]) -> dict[str, tuple[str, str]]:
 
 
 def parse_instructions_and_graph(lines: list[str]) -> tuple[str, dict[str, tuple[str, str]]]:
-    instructions = lines[0]
+    instructions = lines[INSTRUCTIONS_INDEX]
     graph = contruct_graph(lines[2:])
     return instructions, graph
 
@@ -52,12 +54,17 @@ def part_one(lines: list[str]) -> None:
     current_instruction = 0
     steps = 0
 
+    instructions_len = len(instructions)
+
     while current_position != ABSOLUTE_END:
         direction_to_move = instructions[current_instruction]
+
         next_index = 0 if direction_to_move == "L" else 1
         current_position = graph[current_position][next_index]
+
         steps += 1
-        current_instruction = (current_instruction + 1) % len(instructions)
+        # this accounts for overflow
+        current_instruction = (current_instruction + 1) % instructions_len
 
     return steps
 
@@ -72,6 +79,8 @@ def part_two(lines: list[str]) -> None:
     ghost_start_positions = get_ghost_start_positions(graph)
     distance_to_end = {}
 
+    instruction_len = len(instructions)
+
     for ghost_start_position in ghost_start_positions:
         current_position = ghost_start_position
         current_step, steps = (0, 0)
@@ -83,11 +92,15 @@ def part_two(lines: list[str]) -> None:
             current_position = graph[current_position][next_index]
 
             steps += 1
-            current_step = (current_step + 1) % len(instructions)
+            # this accounts for overflow
+            current_step = (current_step + 1) % instruction_len
 
         distance_to_end[ghost_start_position] = steps
 
     # minimum steps for all ghost paths to be on nodes that end with Z
+    # this part was kind of tricky and poorly worded in my honest opinion, we have to use LCM here
+    # since we keep stepping and therefore paths that were at the end keep on looping around hence why this
+    # number is so large
     steps = math.lcm(*distance_to_end.values())
 
     return steps
