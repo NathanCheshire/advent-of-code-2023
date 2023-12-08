@@ -1,11 +1,16 @@
 import math
 import re
 
-NETWORK_LINE_PATTERN = r"(\w+)\s=\s\((\w+),\s(\w+)\)"
+GRAPH_LINE_PATTERN = r"(\w+)\s=\s\((\w+),\s(\w+)\)"
+
 ABSOLUTE_START = "AAA"
 ABSOLUTE_END = "ZZZ"
 GHOST_START = "A"
 GHOST_END = "B"
+
+GRAPH_START_INDEX = 1
+GRAPH_LEFT_INDEX = 2
+GRAPH_RIGHT_INDEX = 3
 
 
 def read_lines_of_file(file) -> list[str]:
@@ -23,11 +28,11 @@ def contruct_graph(lines: list[str]) -> dict[str, tuple[str, str]]:
     graph = {}
 
     for line in lines:
-        matched = re.match(NETWORK_LINE_PATTERN, line)
+        matched = re.match(GRAPH_LINE_PATTERN, line)
 
-        start = matched.group(1)
-        left = matched.group(2)
-        right = matched.group(3)
+        start = matched.group(GRAPH_START_INDEX)
+        left = matched.group(GRAPH_LEFT_INDEX)
+        right = matched.group(GRAPH_RIGHT_INDEX)
 
         graph[start] = (left, right)
 
