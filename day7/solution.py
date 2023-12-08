@@ -1,4 +1,5 @@
 CARD_ORDER = 'AKQJT98765432'
+PART_TWO_CARD_ORDER = 'AKQT98765432J'
 
 
 def read_lines_of_file(file) -> list[str]:
@@ -9,7 +10,7 @@ def read_lines_of_file(file) -> list[str]:
 
 
 def card_value(card):
-    return CARD_ORDER.index(card)
+    return PART_TWO_CARD_ORDER.index(card)
 
 
 def get_hand_and_bid(line: str) -> tuple[str, int]:
@@ -27,33 +28,45 @@ def first_hand_stronger(hand_one: str, hand_two: str) -> bool:
     return False
 
 
+def count_with_joker(counts, jokers):
+    return {card: count + jokers for card, count in counts.items()}
+
+
 def is_five_of_a_kind(hand):
-    return len(set(hand)) == 1
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    return 5 in count_with_joker(counts, jokers).values()
 
 
 def is_four_of_a_kind(hand):
-    counts = {card: hand.count(card) for card in set(hand)}
-    return 4 in counts.values()
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    return 4 in count_with_joker(counts, jokers).values()
 
 
 def is_full_house(hand):
-    counts = {card: hand.count(card) for card in set(hand)}
-    return set(counts.values()) == {2, 3}
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    modified_counts = count_with_joker(counts, jokers)
+    return set(modified_counts.values()) == {2, 3} or (3 in modified_counts.values() and jokers > 0)
 
 
 def is_three_of_a_kind(hand):
-    counts = {card: hand.count(card) for card in set(hand)}
-    return 3 in counts.values() and len(counts) == 3
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    return 3 in count_with_joker(counts, jokers).values()
 
 
 def is_two_pair(hand):
-    counts = {card: hand.count(card) for card in set(hand)}
-    return list(counts.values()).count(2) == 2
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    return list(count_with_joker(counts, jokers).values()).count(2) >= 2 or (2 in counts.values() and jokers > 0)
 
 
 def is_one_pair(hand):
-    counts = {card: hand.count(card) for card in set(hand)}
-    return list(counts.values()).count(2) == 1
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    jokers = hand.count('J')
+    return list(count_with_joker(counts, jokers).values()).count(2) >= 1 or (1 in counts.values() and jokers > 0)
 
 
 def sort_hands(hands):
