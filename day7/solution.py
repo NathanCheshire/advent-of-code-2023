@@ -1,4 +1,5 @@
 CARD_ORDER = 'AKQJT98765432'
+PART_TWO_CARD_ORDER = 'AKQT98765432J'
 
 
 def read_lines_of_file(file) -> list[str]:
@@ -8,8 +9,12 @@ def read_lines_of_file(file) -> list[str]:
     return open(file).read().split('\n')
 
 
-def card_value(card):
-    return CARD_ORDER.index(card)
+def part_one_card_value(hand: str) -> int:
+    return CARD_ORDER.index(hand)
+
+
+def part_two_card_value(hand: str) -> int:
+    return PART_TWO_CARD_ORDER.index(hand)
 
 
 def get_hand_and_bid(line: str) -> tuple[str, int]:
@@ -17,14 +22,18 @@ def get_hand_and_bid(line: str) -> tuple[str, int]:
     return hand, int(bid)
 
 
-def first_hand_stronger(hand_one: str, hand_two: str) -> bool:
-    for card1, card2 in zip(hand_one, hand_two):
-        if card_value(card1) < card_value(card2):
-            return True
-        elif card_value(card1) > card_value(card2):
-            return False
+def replace_jokers(hand):
+    if 'J' not in hand:
+        return hand
 
-    return False
+    counts = {card: hand.count(card) for card in set(hand) if card != 'J'}
+    max_card = max(counts, key=counts.get, default=None)
+
+    if max_card:
+        return [max_card if card == 'J' else card for card in hand]
+    else:
+        # In case there are only J's, replace them with the lowest card
+        return ['2' if card == 'J' else card for card in hand]
 
 
 def is_five_of_a_kind(hand):
@@ -57,7 +66,7 @@ def is_one_pair(hand):
 
 
 def sort_hands(hands):
-    return sorted(hands, key=lambda hand: [-card_value(card) for card in hand])
+    return sorted(hands, key=lambda hand: [-part_two_card_value(card) for card in hand])
 
 
 def part_one(lines: list[str]) -> int:
@@ -73,17 +82,19 @@ def part_one(lines: list[str]) -> int:
     high_card = []
 
     for hand in hands:
-        if is_five_of_a_kind(hand):
+        scoring_hand = replace_jokers(hand)
+
+        if is_five_of_a_kind(scoring_hand):
             five_of_a_kind.append(hand)
-        elif is_four_of_a_kind(hand):
+        elif is_four_of_a_kind(scoring_hand):
             four_of_a_kind.append(hand)
-        elif is_full_house(hand):
+        elif is_full_house(scoring_hand):
             full_house.append(hand)
-        elif is_three_of_a_kind(hand):
+        elif is_three_of_a_kind(scoring_hand):
             three_of_a_kind.append(hand)
-        elif is_two_pair(hand):
+        elif is_two_pair(scoring_hand):
             two_pair.append(hand)
-        elif is_one_pair(hand):
+        elif is_one_pair(scoring_hand):
             one_pair.append(hand)
         else:
             high_card.append(hand)
