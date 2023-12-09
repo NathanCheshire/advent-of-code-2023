@@ -38,6 +38,23 @@ def extrapolate_next_value(numbers: list[int]) -> int:
     return next_value
 
 
+def extrapolate_last_value(numbers: list[int]) -> int:
+    rows = [numbers]
+
+    while len(rows[-1]) > 1:
+        next_row = compute_row_differences(rows[-1])
+        rows.append(next_row)
+
+    for current_row_index in range(len(rows) - 2, -1, -1):
+        current_row = rows[current_row_index]
+        next_row = rows[current_row_index + 1]
+
+        for current_row_element_index in range(len(current_row) - 1):
+            current_row[current_row_element_index] -= next_row[current_row_element_index]
+
+    return rows[0][0]
+
+
 def part_one(lines: list[str]) -> int:
     sum = 0
     for line in lines:
@@ -48,6 +65,17 @@ def part_one(lines: list[str]) -> int:
     return sum
 
 
+def part_two(lines: list[str]) -> int:
+    sum = 0
+    for line in lines:
+        numbers = parse_line_for_numbers(line)
+        last_number = extrapolate_last_value(numbers)
+        sum += last_number
+
+    return sum
+
+
 if __name__ == '__main__':
     lines = read_lines_of_file("text.txt")
     print(f"Part one: {part_one(lines)}")
+    print(f"Part two: {part_two(lines)}")
