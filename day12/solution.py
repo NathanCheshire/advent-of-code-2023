@@ -45,12 +45,15 @@ def compute_data_arrangements(data: list[tuple[str, list[int]]]) -> int:
 
 @cache
 def calculate_number_of_arrangements(remaining_springs: str, damaged_groups: list[int], damaged_springs: int = 0):
-    no_springs = not remaining_springs
-    if no_springs:
-        num_damanged_groups = len(damaged_groups)
-        if ((num_damanged_groups == 1 and damaged_groups[0] == damaged_springs)
-                or (num_damanged_groups == 0 and damaged_springs == 0)):
+    if not remaining_springs:
+        number_of_damaged_groups = len(damaged_groups)
+
+        single_group_and_matching = number_of_damaged_groups == 1 and damaged_groups[
+            0] == damaged_springs
+        no_group_or_damaged_springs = number_of_damaged_groups == 0 and damaged_springs == 0
+        if single_group_and_matching or no_group_or_damaged_springs:
             return 1
+
         return 0
 
     first_spring = remaining_springs[0]
