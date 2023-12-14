@@ -51,18 +51,14 @@ def compute_total_load(lines: list[list[str]]) -> int:
 
 
 def transpose(lines: list[list[str]]) -> list[list[str]]:
-    # Check if lines is empty
-    if not lines:
-        return []
-
-    # Get the number of rows and columns in the input
+    """
+    Rotates the matrix to the right ninetry degrees. Code from stackoverflow.
+    """
     num_rows = len(lines)
     num_cols = len(lines[0])
 
-    # Create a transposed list with the dimensions swapped
     transposed = [['' for _ in range(num_rows)] for _ in range(num_cols)]
 
-    # Fill in the transposed list with rotated values
     for i in range(num_rows):
         for j in range(num_cols):
             transposed[j][num_rows - 1 - i] = lines[i][j]
