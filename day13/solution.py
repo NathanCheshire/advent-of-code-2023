@@ -3,6 +3,13 @@ import numpy as np
 VERTICAL_FACTOR = 100
 
 
+def read_lines_of_file(file: str, splitter: str = '\n') -> list[str]:
+    """
+    Reads the lines of the provided file and returns a tuple.
+    """
+    return open(file).read().split(splitter)
+
+
 def compute_symmetry(block: np.ndarray, allowable_error: int = 0) -> int | bool:
     """
     Returns the symmetric line of this block or False if the block is not symmetric meaning the other axis
@@ -32,7 +39,11 @@ def compute_symmetry(block: np.ndarray, allowable_error: int = 0) -> int | bool:
     return False
 
 
-def calculate_max_symmetry(blocks: list[list[str]], allowable_error: int = 0):
+def calculate_max_symmetry(blocks: list[list[str]], allowable_error: int = 0) -> int:
+    """
+    Returns the symmetry value for this block, if the line is vertical, the number of cols to the
+    left * 100 is returned, else the number of rows above the line.
+    """
     max_symmetry = 0
 
     for block in blocks:
@@ -52,7 +63,7 @@ def calculate_max_symmetry(blocks: list[list[str]], allowable_error: int = 0):
 
 
 if __name__ == '__main__':
-    lines = open("text.txt").read().split("\n\n")
+    lines = read_lines_of_file("text.txt", splitter='\n\n')
     blocks = [line.splitlines() for line in lines]
 
     print(f"Part 1: {calculate_max_symmetry(blocks)}")
