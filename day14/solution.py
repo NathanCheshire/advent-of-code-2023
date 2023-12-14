@@ -103,7 +103,7 @@ def part_two(lines: list[list[str]]) -> int:
         num_cycles += 1
         current_load = compute_total_load(current_cycle)
 
-        if str(current_cycle) in (cycle_str for cycle_str, _ in cycles.values()):
+        if str(current_cycle) in (cycle_str for cycle_str, cycle_load in cycles.values()):
             cycle_start = next(key for key, value in cycles.items()
                                if value[0] == str(current_cycle))
 

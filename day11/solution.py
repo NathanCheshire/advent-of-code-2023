@@ -1,4 +1,3 @@
-import itertools
 GALAXY = "#"
 SPACE = '.'
 
