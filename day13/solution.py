@@ -3,7 +3,11 @@ import numpy as np
 VERTICAL_FACTOR = 100
 
 
-def compute_symmetry(block: np.ndarray, allowable_error: int = 0):
+def compute_symmetry(block: np.ndarray, allowable_error: int = 0) -> int | bool:
+    """
+    Returns the symmetric line of this block or False if the block is not symmetric meaning the other axis
+    is what the block is symmetric on.
+    """
     current_line_index = 1
 
     while current_line_index < len(block):
