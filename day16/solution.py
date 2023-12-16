@@ -53,10 +53,38 @@ def part_one(lines: list[str]) -> int:
             beam_queue.put((current_x + delta_x, current_y +
                            delta_y, delta_x, delta_y))
         elif is_mirror(current_char):
+            left = current_x - 1
+            right = current_x + 1
+            top = current_y - 1
+            bottom = current_y + 1
+
             if current_char == '/':
-                pass
+                # if coming from top, add left char, going left
+                if delta_y == 1 and left >= 0:
+                    beam_queue.put((left, current_y, -1, 0))
+                # if coming from left, add top char, going up
+                if delta_x == 1 and top >= 0:
+                    beam_queue.put((current_x, top, 0, -1))
+                # if coming from right, add bottom char, going down
+                if delta_x == -1 and bottom < len(lines):
+                    beam_queue.put((current_x, bottom, 0, 1))
+                # if coming from bottom, add right char, going right
+                if delta_y == -1 and right < len(lines[0]):
+                    beam_queue.put((right, current_y, 1, 0))
+
             elif current_char == '\\':
-                pass
+                # if coming from top, add right char, going right
+                if delta_y == 1:
+                    pass
+                # if coming from right, add top char, going up
+                if delta_x == -1:
+                    pass
+                # if coming from left, add bottom char, going down
+                if delta_x == 1:
+                    pass
+                # if coming from bottom, add left char, going left
+                if delta_y == -1:
+                    pass
 
         elif is_splitter(current_char):
             if current_char == '-':
