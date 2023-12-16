@@ -30,7 +30,7 @@ def get_grid_char(grid: list[str], x: int, y: int) -> str:
     return grid[y][x]
 
 
-def get_max_distance_of_path(grid_path: Queue, grid: list[str]) -> int:
+def get_distances_from_start(grid_path: Queue, grid: list[str]) -> dict[tuple[int, int], int]:
     distances_from_start = {(find_start_node(grid)): 0}
 
     while not grid_path.empty():
@@ -60,7 +60,11 @@ def get_max_distance_of_path(grid_path: Queue, grid: list[str]) -> int:
             grid_path.put((current_distance + 1, (x + 1, y)))
             grid_path.put((current_distance + 1, (x, y + 1)))
 
-    return max(distances_from_start.values())
+    return distances_from_start
+
+
+def get_max_distance_of_path(grid_path: Queue, grid: list[str]) -> int:
+    return max(get_distances_from_start(grid_path, grid).values())
 
 
 def part_one(lines: list[str]) -> int:
@@ -98,3 +102,25 @@ if __name__ == '__main__':
     lines = read_lines_of_file("text.txt")
 
     print(f"Part one: {part_one(lines)}")
+
+    w = len(lines[0])
+    h = len(lines)
+
+    inside_count = 0
+    for y, line in enumerate(m):
+        for x, c in enumerate(line):
+            if (x, y) in dists:
+                continue
+
+            crosses = 0
+            x2, y2 = x, y
+
+            while x2 < w and y2 < h:
+                c2 = lines[y2][x2]
+                if (x2, y2) in dists and c2 != "L" and c2 != "7":
+                    crosses += 1
+                x2 += 1
+                y2 += 1
+
+            if crosses % 2 == 1:
+                inside_count += 1
