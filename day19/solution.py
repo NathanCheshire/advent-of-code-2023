@@ -180,5 +180,5 @@ def part_one(workflows_and_ratings: list[str]) -> int:
 
 if __name__ == '__main__':
     workflows_and_ratings = read_lines_of_file('text.txt', '\n\n')
-    print(part_one(workflows_and_ratings))
-    print(part_two(workflows_and_ratings))
+    print(f"Part one: {part_one(workflows_and_ratings)}")
+    print(f"Part two: {part_two(workflows_and_ratings)}")
